@@ -35,8 +35,24 @@ class Metronome extends Component {
    */ 
   handleBpmChange = event => {
     const bpm = event.target.value;
-    this.setState({ bpm });
-  }
+
+    if ( this.state.playing ) {
+      
+      // Stop the old timer and start a new one
+      clearInterval( this.timer );
+      this.timer = setInterval( this.playClick, ( 60 / bpm ) * 1000 );
+
+      // Set the new BPM, and reset the beat counter
+      this.setState({ 
+        count: 0,
+        bpm 
+      });
+    }
+    else {
+      // Otherwise, just update the BPM
+      this.setState({ bpm });
+    }
+  };
 
   /*
    * Function Name: startStop()
@@ -49,8 +65,51 @@ class Metronome extends Component {
    * Local variables: None.
    */
   startStop = () => {
-    this.click1.play();
-  }
+    
+    if ( this.state.playing ) {
+      
+      // Stop the timer
+      clearInterval( this.timer );
+
+      this.setState({
+        playing: false
+      });
+    } 
+    else {
+      
+      // Start timer with the current BPM
+      this.timer = setInterval(
+        this.playClick,
+        (60 / this.state.bpm) * 1000
+      );
+
+      this.setState(
+        {
+          count: 0,
+          playing: true
+          // Play a click "immediately" (after setState finishes)
+        },
+        this.playClick
+      );
+    }
+  };
+
+  playClick = () => {
+    const { count, beatsPerMeasure } = this.state;
+
+    // The first beat will have a different sound than the others
+    if ( count % beatsPerMeasure === 0 ) {
+      this.click2.play();
+    }
+    else {
+      this.click1.play();
+    }
+
+    // Keep track of which beat we're on
+    this.setState( state => ({
+      count: (state.count + 1) % state.beatsPerMeasure
+    }));
+  };
 
   render() {
 
@@ -59,12 +118,20 @@ class Metronome extends Component {
 
     return (
       <div className = "metronome">
+        <form>
+          <label for = "submit"> BPM </label> 
+          <div className = "bpm-input">
+            <input type = "text" id = "submit" placeholder = {bpm} />
+            <button type = "button" onClick = { this.handleBpmChange }>
+              { 'Submit' }
+            </button>
+          </div>
+        </form>
         <div className = "bpm-slider">
-          <div>{bpm} BPM</div>
           <input 
             type = "range" 
             min = "60" 
-            max = "240" 
+            max = "300" 
             value = {bpm}
             onChange = {this.handleBpmChange}
           />
