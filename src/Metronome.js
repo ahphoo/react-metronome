@@ -38,6 +38,9 @@ class Metronome extends Component {
     // Determine if input is from slider or text input
     const bpm = event.currentTarget.value ? event.currentTarget.value : this.refs.myInput.value; 
 
+    // Update text field
+    document.getElementById('input-box').value = bpm;
+
     if ( this.state.playing ) {
       
       // Stop the old timer and start a new one
@@ -126,7 +129,7 @@ class Metronome extends Component {
             {/* Used a ref to tell handleBpmChange input is from button.
                 Also, used defaultValue to make text box input modifiable
               */}
-            <input type = "text" ref = "myInput" defaultValue = { bpm } />
+            <input type = "text" id = "input-box" ref = "myInput" defaultValue = { bpm } />
             <button type = "button" onClick = { this.handleBpmChange }>{ 'Submit' }</button>
           </div>
         </form>
