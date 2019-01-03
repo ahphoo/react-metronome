@@ -34,7 +34,9 @@ class Metronome extends Component {
    *   bpm -- used to update the bpm property in Metronome's state.
    */ 
   handleBpmChange = event => {
-    const bpm = event.target.value;
+
+    // Determine if input is from slider or text input
+    const bpm = event.currentTarget.value ? event.currentTarget.value : this.refs.myInput.value; 
 
     if ( this.state.playing ) {
       
@@ -119,25 +121,27 @@ class Metronome extends Component {
     return (
       <div className = "metronome">
         <form>
-          <label for = "submit"> BPM </label> 
+          <label htmlFor = "submit"> BPM </label> 
           <div className = "bpm-input">
-            <input type = "text" id = "submit" placeholder = {bpm} />
-            <button type = "button" onClick = { this.handleBpmChange }>
-              { 'Submit' }
-            </button>
+            {/* Used a ref to tell handleBpmChange input is from button.
+                Also, used defaultValue to make text box input modifiable
+              */}
+            <input type = "text" ref = "myInput" defaultValue = { bpm } />
+            <button type = "button" onClick = { this.handleBpmChange }>{ 'Submit' }</button>
           </div>
         </form>
         <div className = "bpm-slider">
           <input 
-            type = "range" 
+            type = "range"
+            id = "slider"
             min = "60" 
             max = "300" 
-            value = {bpm}
-            onChange = {this.handleBpmChange}
+            value = { bpm }
+            onChange = { this.handleBpmChange }
           />
         </div> 
         <button onClick = { this.startStop }>
-          {playing ? 'Stop' : 'Start'}
+          { playing ? 'Stop' : 'Start' }
         </button>
       </div>
     );
